@@ -64,7 +64,6 @@ public class MovieCatalogueService {
      * @throws IllegalArgumentException
      */
     public void editMovie(String title, MovieIO movieIO) throws IllegalArgumentException {
-        System.out.println(title);
         Movie movie = databaseService.getMovieByTitle(title);
         if (movie == null) {
             throw new IllegalArgumentException("No movie found to edit for the title given");
