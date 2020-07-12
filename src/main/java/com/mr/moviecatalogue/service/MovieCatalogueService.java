@@ -23,7 +23,7 @@ public class MovieCatalogueService {
     private static final int RATING_DECIMAL_PLACES = 1;
 
     //Floats cannot be stored as null in SQL, so stored as -1.0 if rating is
-    //not present after eliminating ratings outside the acceptable range
+    //not present after eliminating ratings outside the acceptable range.
     private BiConsumer<String,Movie> handleNullRatings = (str,mov) -> {
         if (new Float(-1.0).equals(mov.getRating().get())) {
             mov.setRating(Optional.empty());
@@ -73,7 +73,7 @@ public class MovieCatalogueService {
         if (rating != null) {
             checkRatingIsWithinRange(rating);
             if (!movie.getRating().isPresent() || !rating.equals(movie.getRating().get())) {
-                databaseService.updateRating(title, movieIO.getRating());
+                databaseService.updateRating(title, roundRating(movieIO.getRating(), RATING_DECIMAL_PLACES));
             }
         }
 
@@ -93,7 +93,7 @@ public class MovieCatalogueService {
      */
     public Catalogue getMoviesByDirector(String director){
         Catalogue returnCatalogue = new Catalogue();
-        Map<String,Movie> movieMap = databaseService.getMoviesByDirector(director);
+        Map<String, Movie> movieMap = databaseService.getMoviesByDirector(director);
         movieMap.forEach(handleNullRatings);
         returnCatalogue.setMovies(movieMap);
         return returnCatalogue;
@@ -117,7 +117,7 @@ public class MovieCatalogueService {
      * Check rating is within the allowed range (0.0 to 5.0)
      * @param rating
      */
-    private void checkRatingIsWithinRange(Float rating) {
+    private void checkRatingIsWithinRange(Float rating) throws IllegalArgumentException {
         if (rating < 0.0 || rating > 5.0) {
             throw new IllegalArgumentException("The rating given was outside of the acceptable range. Please use ratings within 0.0 - 5.0");
         }
