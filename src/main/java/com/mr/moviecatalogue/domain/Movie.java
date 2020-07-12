@@ -14,5 +14,5 @@ import java.util.Optional;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Movie implements Serializable {
     private Optional<String> director;
-    private Optional<Integer> rating;
+    private Optional<Float> rating;
 }

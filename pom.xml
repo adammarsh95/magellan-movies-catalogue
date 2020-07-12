@@ -45,7 +45,12 @@
 			<artifactId>postgresql</artifactId>
 			<version>42.2.14.jre7</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>
