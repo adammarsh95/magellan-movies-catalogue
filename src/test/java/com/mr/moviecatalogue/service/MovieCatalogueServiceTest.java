@@ -211,4 +211,44 @@ public class MovieCatalogueServiceTest {
 
         assertEquals(new Movie(Optional.of("Ben Stiller"), Optional.of(Float.valueOf((float) 5.0))), catalogue.getMovies().get("Tropic Thunder"));
     }
+
+    @Test
+    public void test_database_not_called_if_previous_value_is_empty_when_deleting_director(){
+        Mockito.when(database.getMovieByTitle("Tropic Thunder")).thenReturn(new Movie(Optional.empty(), Optional.of(Float.valueOf((float) -1.0))));
+        service.deleteDirectorFromMovie("Tropic Thunder");
+        Mockito.verify(database, Mockito.never()).updateDirector(any(), any());
+    }
+
+    @Test
+    public void test_database_called_if_previous_values_is_present_when_deleting_director(){
+        Mockito.when(database.getMovieByTitle("Tropic Thunder")).thenReturn(new Movie(Optional.of("James Cameron"), Optional.of(Float.valueOf((float) 4.9))));
+        service.deleteDirectorFromMovie("Tropic Thunder");
+        Mockito.verify(database, Mockito.times(1)).updateDirector(any(), any());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test_delete_director_throws_illegal_argument_exception_if_movie_does_not_exist_in_database(){
+        Mockito.when(database.getMovieByTitle("TrpicThonder")).thenReturn(null);
+        service.deleteDirectorFromMovie("TrpicThonder");
+    }
+
+    @Test
+    public void test_database_not_called_if_previous_value_is_empty_when_deleting_rating(){
+        Mockito.when(database.getMovieByTitle("Tropic Thunder")).thenReturn(new Movie(Optional.empty(), Optional.of(Float.valueOf((float) -1.0))));
+        service.deleteRatingFromMovie("Tropic Thunder");
+        Mockito.verify(database, Mockito.never()).updateRating(any(), any());
+    }
+
+    @Test
+    public void test_database_called_if_previous_values_is_present_when_deleting_rating(){
+        Mockito.when(database.getMovieByTitle("Tropic Thunder")).thenReturn(new Movie(Optional.of("James Cameron"), Optional.of(Float.valueOf((float) 4.9))));
+        service.deleteRatingFromMovie("Tropic Thunder");
+        Mockito.verify(database, Mockito.times(1)).updateRating(any(), any());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test_delete_rating_throws_illegal_argument_exception_if_movie_does_not_exist_in_database(){
+        Mockito.when(database.getMovieByTitle("Tropic Thunder")).thenReturn(null);
+        service.deleteRatingFromMovie("Tropic Thunder");
+    }
 }

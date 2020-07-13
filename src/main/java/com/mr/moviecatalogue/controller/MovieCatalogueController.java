@@ -23,6 +23,9 @@ public class MovieCatalogueController {
 
     /**
      * Calls the service method to return the current movie catalogue
+     * @param title
+     * @param director
+     * @param ratingString
      * @return Returns the movie catalogue
      */
     @GetMapping("/movies")
@@ -106,8 +109,46 @@ public class MovieCatalogueController {
         }
     }
 
+    /**
+     * Calls the database service to drop the database from the SQL server, clearing
+     * the stored data
+     * @return Http status code
+     */
     @DeleteMapping("/movies")
-    public void clearCatalogue(){
+    public ResponseEntity<HttpStatus> clearCatalogue(){
         databaseService.dropDatabase();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * Deletes the director from the movie in the database for the given title
+     * @param title
+     * @return Http status code
+     */
+    @DeleteMapping("/movies/{title}/director")
+    public ResponseEntity<HttpStatus> deleteDirector(@PathVariable(value = "title") final String title){
+        try {
+            movieCatalogueService.deleteDirectorFromMovie(title);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Deletes the rating from the movie in the database for the given title
+     * @param title
+     * @return Http status code
+     */
+    @DeleteMapping("/movies/{title}/rating")
+    public ResponseEntity<HttpStatus> deleteRating(@PathVariable(value = "title") final String title){
+        try {
+            movieCatalogueService.deleteRatingFromMovie(title);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }

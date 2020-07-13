@@ -35,7 +35,7 @@ public class MovieCatalogueService {
     };
 
     /**
-     *
+     * Calls the database and returns a Catalogue containing all the movies stored in the database
      * @return Returns the full current catalogue of movies
      */
     public Catalogue getCurrentCatalogue(){
@@ -47,7 +47,9 @@ public class MovieCatalogueService {
     }
 
     /**
-     *
+     * Throws an IllegalArgumentException for ratings outside the range of 0.0 - 5.0 and
+     * rounds the given rating to one decimal place, or sets the rating to -1.0 if the rating
+     * in the MovieIO is null, and calls the database service to store the movie in the database
      * @param movieIO
      */
     public void addMovie(MovieIO movieIO)  {
@@ -62,7 +64,11 @@ public class MovieCatalogueService {
     }
 
     /**
-     *
+     * Verifies that there is a movie in the database with the given title to edit. Then conditionally
+     * updates the movie in the database based on which fields are set in the MovieIO and whether they
+     * already match the values stored in the database for the given movie. Throws an IllegalArgumentException
+     * for ratings outside the range of 0.0 - 5.0, and rounds the given rating to one decimal place. Also
+     * throws an IllegalArgumentException if there is no movie present in the database with the given title.
      * @param title
      * @param movieIO
      */
@@ -90,9 +96,9 @@ public class MovieCatalogueService {
     }
 
     /**
-     *
+     * Calls the database service to search for movies with the given director and returns them in a Catalogue
      * @param director
-     * @return
+     * @return A Catalogue with the movies with the given director
      */
     public Catalogue getMoviesByDirector(String director){
         Catalogue returnCatalogue = new Catalogue();
@@ -103,9 +109,11 @@ public class MovieCatalogueService {
     }
 
     /**
-     *
+     * Checks the given rating is within the acceptable range of 0.0-5.0 and throws an IllegalArgumentException
+     * if not. Then rounds the rating to 1 decimal place, and calls the database service to search for movies
+     * with the given rating and returns them in a Catalogue
      * @param rating
-     * @return
+     * @return A Catalogue containing all the movies with a rating equal to or above the given rating
      */
     public Catalogue getMoviesAboveRating(Float rating)  {
         checkRatingIsWithinRange(rating);
@@ -149,6 +157,39 @@ public class MovieCatalogueService {
 
         returnCatalogue.setMovies(databaseService.getMoviesByDirectorAboveRating(director, roundedRating));
         return returnCatalogue;
+    }
+
+    /**
+     * Calls the database service to see if there is a movie stored for the given title,
+     * and if so, calls the database service to delete the director for it
+     * @param title
+     */
+    public void deleteDirectorFromMovie(String title){
+        Movie movie = databaseService.getMovieByTitle(title);
+        if (movie == null) {
+            throw new IllegalArgumentException("No movie found to edit for the title given");
+        }
+
+        if (movie.getDirector().isPresent()) {
+            databaseService.updateDirector(title, null);
+        }
+    }
+
+    /**
+     * Calls the database service to see if there is a movie stored for the given title,
+     * and if so, calls the database service to update the rating to -1.0 which is being
+     * used for null ratings in the database
+     * @param title
+     */
+    public void deleteRatingFromMovie(String title){
+        Movie movie = databaseService.getMovieByTitle(title);
+        if (movie == null) {
+            throw new IllegalArgumentException("No movie found to edit for the title given");
+        }
+
+        if (movie.getRating().isPresent() && !movie.getRating().get().equals(Float.valueOf((float) -1.0))) {
+            databaseService.updateRating(title, Float.valueOf((float) -1.0));
+        }
     }
 
     /**

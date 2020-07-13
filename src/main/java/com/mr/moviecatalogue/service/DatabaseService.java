@@ -8,7 +8,7 @@ import java.sql.*;
 import java.util.*;
 
 /**
- *
+ * This service class handles all of the application's interactions with the database
  */
 @Component
 public class DatabaseService {
@@ -103,8 +103,8 @@ public class DatabaseService {
     }
 
     /**
-     *
-     * @return
+     * Returns all movies in the database in a Map
+     * @return A HashMap with all the movies in the database, keyed by their title
      */
     public Map<String, Movie> getAllMovies() {
         Connection connection = connectToDatabase();
@@ -136,8 +136,7 @@ public class DatabaseService {
     }
 
     /**
-     *
-     * @return
+     * Adds the given movie to the database
      */
     public void addMovie(MovieIO movieIO){
         Connection connection = connectToDatabase();
@@ -205,9 +204,11 @@ public class DatabaseService {
     }
 
     /**
-     *
+     * Gets all the movies from the database directed by the given director. Allows the use of
+     * * or % allow partial queries e.g. Ben* will return all movies for all directors with the
+     * first name Ben. The input string is not case sensitive.
      * @param director
-     * @return
+     * @return A HashMap containing all the movies by the given director, keyed by title
      */
     public Map<String, Movie> getMoviesByDirector(String director){
         Connection connection = connectToDatabase();
@@ -240,9 +241,10 @@ public class DatabaseService {
     }
 
     /**
-     *
+     * Gets all the movies from the database with a rating value above or equal to the given
+     * rating
      * @param rating
-     * @return
+     * @return A HashMap containing all the movies above the given rating, keyed by title
      */
     public Map<String, Movie> getMoviesAboveRating(Float rating){
         Connection connection = connectToDatabase();
@@ -274,9 +276,13 @@ public class DatabaseService {
     }
 
     /**
-     *
+     * Gets all the movies from the database directed by the given director and above the given
+     * rating. Allows the use of * or % to allow partial queries e.g. Ben* will return all movies
+     * for all directors with the first name Ben. The input string is not case sensitive. The
+     * movies returned are all above or equal to the given rating.
      * @param rating
-     * @return
+     * @param director
+     * @return A HashMap containing all the movies in the database by the given director and above the given rating, keyed by title.
      */
     public Map<String, Movie> getMoviesByDirectorAboveRating(String director, Float rating){
         Connection connection = connectToDatabase();
@@ -310,7 +316,7 @@ public class DatabaseService {
     }
 
     /**
-     *
+     * Updates the title of the movie in the database.
      * @param currentTitle
      * @param newTitle
      */
@@ -339,7 +345,7 @@ public class DatabaseService {
     }
 
     /**
-     *
+     * Updates the director of the movie in the database for the given title.
      * @param title
      * @param director
      */
@@ -368,7 +374,7 @@ public class DatabaseService {
     }
 
     /**
-     *
+     * Updates the rating of the movie in the database for the given title.
      * @param title
      * @param rating
      */
