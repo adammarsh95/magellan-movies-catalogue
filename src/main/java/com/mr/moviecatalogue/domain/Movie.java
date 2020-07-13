@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.util.Optional;
 
+/**
+ * Movie class that contains 2 optionals, director and rating.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

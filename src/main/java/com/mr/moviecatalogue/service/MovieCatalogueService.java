@@ -2,6 +2,7 @@ package com.mr.moviecatalogue.service;
 
 import com.mr.moviecatalogue.domain.Catalogue;
 import com.mr.moviecatalogue.domain.Movie;
+import com.mr.moviecatalogue.inputobject.DirectorIO;
 import com.mr.moviecatalogue.inputobject.MovieIO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,7 +53,7 @@ public class MovieCatalogueService {
      * in the MovieIO is null, and calls the database service to store the movie in the database
      * @param movieIO
      */
-    public void addMovie(MovieIO movieIO)  {
+    public void addMovie(MovieIO movieIO){
         Float rating = movieIO.getRating();
         if (rating != null) {
             checkRatingIsWithinRange(rating);
@@ -61,6 +62,27 @@ public class MovieCatalogueService {
             movieIO.setRating(Float.valueOf((float) -1.0));
         }
         databaseService.addMovie(movieIO);
+    }
+
+    /**
+     * Adds the director to all the given movies in the DirectorIO argument. First checks
+     * the full list of titles to ensure they are all in the database, throwing an
+     * IllegalArgumentException if one is not, and then calls the database service to update
+     * the director for each movie in the database
+     * @param directorIO
+     * @throws IllegalArgumentException
+     */
+    public void addDirector(DirectorIO directorIO){
+        directorIO.getMovies().forEach(title -> {
+            Movie movie = databaseService.getMovieByTitle(title);
+            if (movie == null) {
+                throw new IllegalArgumentException(String.format("No movie found to edit for the title given: %s", title));
+            }
+        });
+
+        //In separate forEach block to avoid some movies having director set and then
+        //IllegalArgumentException being thrown partway through the list
+        directorIO.getMovies().forEach(title -> databaseService.updateDirector(title, directorIO.getName()));
     }
 
     /**

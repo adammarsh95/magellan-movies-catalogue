@@ -457,7 +457,6 @@ public class DatabaseService {
         }
     }
 
-
     Map<String, Movie> getMovieMapFromResultSet(ResultSet resultSet) throws SQLException {
         Map<String, Movie> movieMap = new HashMap<>();
         while (resultSet.next()) {

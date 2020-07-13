@@ -2,6 +2,7 @@ package com.mr.moviecatalogue.service;
 
 import com.mr.moviecatalogue.domain.Catalogue;
 import com.mr.moviecatalogue.domain.Movie;
+import com.mr.moviecatalogue.inputobject.DirectorIO;
 import com.mr.moviecatalogue.inputobject.MovieIO;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,12 +13,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -269,5 +270,30 @@ public class MovieCatalogueServiceTest {
     public void test_delete_director_calls_database_service(){
         service.deleteDirector("Ben Stiller");
         Mockito.verify(database, Mockito.times(1)).deleteDirector("Ben Stiller");
+    }
+
+    @Test
+    public void test_if_add_director_contains_one_missing_movie_then_no_movies_are_updated(){
+        DirectorIO directorIO = new DirectorIO("Guy Ritchie", Arrays.asList("Snatch", "Lock, Stock and Two Smoking Barrels", "Sherlock Holmes"));
+        Mockito.when(database.getMovieByTitle("Snatch")).thenReturn(new Movie(Optional.empty(), Optional.of(Float.valueOf((float) 4.8))));
+        Mockito.when(database.getMovieByTitle("Sherlock Holmes")).thenReturn(new Movie(Optional.empty(), Optional.of(Float.valueOf((float) 4.5))));
+        Mockito.when(database.getMovieByTitle("Lock, Stock and Two Smoking Barrels")).thenReturn(null);
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            service.addDirector(directorIO);
+        });
+        Mockito.verify(database, Mockito.never()).updateDirector(any(), any());
+    }
+
+    @Test
+    public void test_if_add_director_called_correctly_all_movies_are_checked_and_updated(){
+        DirectorIO directorIO = new DirectorIO("Guy Ritchie", Arrays.asList("Snatch", "Lock, Stock and Two Smoking Barrels", "Sherlock Holmes"));
+        Mockito.when(database.getMovieByTitle("Snatch")).thenReturn(new Movie(Optional.empty(), Optional.of(Float.valueOf((float) 4.8))));
+        Mockito.when(database.getMovieByTitle("Sherlock Holmes")).thenReturn(new Movie(Optional.empty(), Optional.of(Float.valueOf((float) 4.5))));
+        Mockito.when(database.getMovieByTitle("Lock, Stock and Two Smoking Barrels")).thenReturn(new Movie(Optional.empty(), Optional.of(Float.valueOf((float) 4.3))));
+        service.addDirector(directorIO);
+        Mockito.verify(database, Mockito.times(1)).updateDirector("Snatch", "Guy Ritchie");
+        Mockito.verify(database, Mockito.times(1)).updateDirector("Lock, Stock and Two Smoking Barrels", "Guy Ritchie");
+        Mockito.verify(database, Mockito.times(1)).updateDirector("Sherlock Holmes", "Guy Ritchie");
     }
 }

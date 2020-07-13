@@ -1,6 +1,7 @@
 package com.mr.moviecatalogue.controller;
 
 import com.mr.moviecatalogue.domain.Catalogue;
+import com.mr.moviecatalogue.inputobject.DirectorIO;
 import com.mr.moviecatalogue.inputobject.MovieIO;
 import com.mr.moviecatalogue.service.DatabaseService;
 import com.mr.moviecatalogue.service.MovieCatalogueService;
@@ -179,6 +180,28 @@ public class MovieCatalogueController {
     public ResponseEntity<HttpStatus> deleteDirector(@PathVariable(value = "director") final String director){
         try {
             movieCatalogueService.deleteDirector(director);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Validates the request body object and calls the service method to add the
+     * given director to all the movies in the given list of titles. Will return 400
+     * bad request and won't update any movies if the list of titles contains any title
+     * that is not already stored in the database.
+     * @param directorIO
+     * @return Http status code
+     */
+    @PostMapping("/movies/directors")
+    public ResponseEntity<HttpStatus> addDirector(@RequestBody DirectorIO directorIO){
+        if (directorIO == null || directorIO.getName() == null || directorIO.getName().equalsIgnoreCase("") || directorIO.getMovies() == null || directorIO.getMovies().isEmpty()){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        try {
+            movieCatalogueService.addDirector(directorIO);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
