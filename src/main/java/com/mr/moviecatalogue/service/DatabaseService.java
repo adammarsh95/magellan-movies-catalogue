@@ -402,6 +402,34 @@ public class DatabaseService {
         }
     }
 
+    /**
+     * Deletes the movie from the database for the given title. Title is case insensitive.
+     * @param title
+     */
+    public void deleteMovie(String title){
+        Connection connection = connectToDatabase();
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement("DELETE FROM movie_table WHERE LOWER(TITLE) = LOWER(?)");
+            statement.setString(1, title);
+            statement.executeUpdate();
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+            System.out.println(sqle.getClass().getName()+": "+sqle.getMessage());
+        }  finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                connection.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println(e.getClass().getName()+": "+e.getMessage());
+            }
+        }
+    }
+
+
     Map<String, Movie> getMovieMapFromResultSet(ResultSet resultSet) throws SQLException {
         Map<String, Movie> movieMap = new HashMap<>();
         while (resultSet.next()) {

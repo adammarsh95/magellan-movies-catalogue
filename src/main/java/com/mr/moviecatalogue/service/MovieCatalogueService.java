@@ -193,6 +193,20 @@ public class MovieCatalogueService {
     }
 
     /**
+     * Calls the database service to see if there is a movie stored for the given title,
+     * and if so, calls the database service to delete the movie
+     * @param title
+     */
+    public void deleteMovie(String title){
+        Movie movie = databaseService.getMovieByTitle(title);
+        if (movie == null) {
+            throw new IllegalArgumentException("No movie found to edit for the title given");
+        }
+
+        databaseService.deleteMovie(title);
+    }
+
+    /**
      * Check rating is within the allowed range (0.0 to 5.0)
      * @param rating
      */

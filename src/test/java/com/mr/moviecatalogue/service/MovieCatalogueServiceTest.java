@@ -251,4 +251,17 @@ public class MovieCatalogueServiceTest {
         Mockito.when(database.getMovieByTitle("Tropic Thunder")).thenReturn(null);
         service.deleteRatingFromMovie("Tropic Thunder");
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test_delete_movie_throws_illegal_argument_exception_if_movie_does_not_exist_in_database(){
+        Mockito.when(database.getMovieByTitle("Tropic Thunder")).thenReturn(null);
+        service.deleteMovie("Tropic Thunder");
+    }
+
+    @Test
+    public void test_database_called_if_previous_value_is_present_when_deleting_movie(){
+        Mockito.when(database.getMovieByTitle("Tropic Thunder")).thenReturn(new Movie(Optional.of("James Cameron"), Optional.of(Float.valueOf((float) 4.9))));
+        service.deleteMovie("Tropic Thunder");
+        Mockito.verify(database, Mockito.times(1)).deleteMovie(any());
+    }
 }

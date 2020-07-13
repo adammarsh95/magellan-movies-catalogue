@@ -151,4 +151,20 @@ public class MovieCatalogueController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    /**
+     * Deletes the movie from the database for the given title
+     * @param title
+     * @return Http status code
+     */
+    @DeleteMapping("/movies/{title}")
+    public ResponseEntity<HttpStatus> deleteMovie(@PathVariable(value = "title") final String title){
+        try {
+            movieCatalogueService.deleteMovie(title);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
