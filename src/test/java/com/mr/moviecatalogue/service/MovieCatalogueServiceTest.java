@@ -264,4 +264,10 @@ public class MovieCatalogueServiceTest {
         service.deleteMovie("Tropic Thunder");
         Mockito.verify(database, Mockito.times(1)).deleteMovie(any());
     }
+
+    @Test
+    public void test_delete_director_calls_database_service(){
+        service.deleteDirector("Ben Stiller");
+        Mockito.verify(database, Mockito.times(1)).deleteDirector("Ben Stiller");
+    }
 }

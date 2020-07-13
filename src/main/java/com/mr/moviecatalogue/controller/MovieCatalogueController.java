@@ -126,7 +126,7 @@ public class MovieCatalogueController {
      * @return Http status code
      */
     @DeleteMapping("/movies/{title}/director")
-    public ResponseEntity<HttpStatus> deleteDirector(@PathVariable(value = "title") final String title){
+    public ResponseEntity<HttpStatus> deleteDirectorFromMovie(@PathVariable(value = "title") final String title){
         try {
             movieCatalogueService.deleteDirectorFromMovie(title);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -142,7 +142,7 @@ public class MovieCatalogueController {
      * @return Http status code
      */
     @DeleteMapping("/movies/{title}/rating")
-    public ResponseEntity<HttpStatus> deleteRating(@PathVariable(value = "title") final String title){
+    public ResponseEntity<HttpStatus> deleteRatingFromMovie(@PathVariable(value = "title") final String title){
         try {
             movieCatalogueService.deleteRatingFromMovie(title);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -161,6 +161,22 @@ public class MovieCatalogueController {
     public ResponseEntity<HttpStatus> deleteMovie(@PathVariable(value = "title") final String title){
         try {
             movieCatalogueService.deleteMovie(title);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    /**
+     * Deletes the given director from all movies with the given director
+     * @param director
+     * @return Http status code
+     */
+    @DeleteMapping("/movies/directors/{director}")
+    public ResponseEntity<HttpStatus> deleteDirector(@PathVariable(value = "director") final String director){
+        try {
+            movieCatalogueService.deleteDirector(director);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());

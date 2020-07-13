@@ -429,6 +429,34 @@ public class DatabaseService {
         }
     }
 
+    /**
+     * Sets the director column to null for all movies with the given director. Case insensitive.
+     * @param director
+     */
+    public void deleteDirector(String director){
+        Connection connection = connectToDatabase();
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement("UPDATE movie_table SET DIRECTOR = ? WHERE lower(DIRECTOR) = lower(?)");
+            statement.setString(1, null);
+            statement.setString(2, director);
+            statement.executeUpdate();
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+            System.out.println(sqle.getClass().getName()+": "+sqle.getMessage());
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+                connection.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println(e.getClass().getName()+": "+e.getMessage());
+            }
+        }
+    }
+
 
     Map<String, Movie> getMovieMapFromResultSet(ResultSet resultSet) throws SQLException {
         Map<String, Movie> movieMap = new HashMap<>();

@@ -207,6 +207,14 @@ public class MovieCatalogueService {
     }
 
     /**
+     * Calls database service to delete the director value for all movies with the given director
+     * @param director
+     */
+    public void deleteDirector(String director){
+        databaseService.deleteDirector(director);
+    }
+
+    /**
      * Check rating is within the allowed range (0.0 to 5.0)
      * @param rating
      */
