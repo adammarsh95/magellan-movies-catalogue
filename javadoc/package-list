@@ -1,0 +1,6 @@
+com.mr.moviecatalogue
+com.mr.moviecatalogue.configuration
+com.mr.moviecatalogue.controller
+com.mr.moviecatalogue.domain
+com.mr.moviecatalogue.inputobject
+com.mr.moviecatalogue.service
