@@ -27,8 +27,8 @@ public class DatabaseServiceTest {
     private String movieTitleTwo = "Snatch";
     private String movieDirectorOne = "Ben Stiller";
     private String movieDirectorTwo = "Guy Ritchie";
-    private Float movieRatingOne = new Float(5.0);
-    private Float movieRatingTwo = new Float(4.5);
+    private Float movieRatingOne = Float.valueOf((float) 5.0);
+    private Float movieRatingTwo = Float.valueOf((float) 4.5);
 
     @Before
     public void setup(){
@@ -59,7 +59,7 @@ public class DatabaseServiceTest {
         Mockito.when(mockResultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
         Mockito.when(mockResultSet.getString("TITLE")).thenReturn(movieTitleOne).thenReturn(movieTitleTwo);
         Mockito.when(mockResultSet.getString("DIRECTOR")).thenReturn(null).thenReturn(movieDirectorTwo);
-        Mockito.when(mockResultSet.getFloat("RATING")).thenReturn(movieRatingOne).thenReturn(new Float(-1.0));
+        Mockito.when(mockResultSet.getFloat("RATING")).thenReturn(movieRatingOne).thenReturn(Float.valueOf((float) -1.0));
 
         Map<String,Movie> movieMap = databaseService.getMovieMapFromResultSet(mockResultSet);
         assertTrue(movieMap.containsKey(movieTitleOne));
@@ -69,6 +69,6 @@ public class DatabaseServiceTest {
 
         assertEquals(movieDirectorTwo, movieMap.get(movieTitleTwo).getDirector().get());
         assertEquals(movieRatingOne, movieMap.get(movieTitleOne).getRating().get());
-        assertEquals(new Float(-1.0), movieMap.get(movieTitleTwo).getRating().get());
+        assertEquals(Float.valueOf((float) -1.0), movieMap.get(movieTitleTwo).getRating().get());
     }
 }

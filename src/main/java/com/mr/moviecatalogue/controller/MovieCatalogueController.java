@@ -26,7 +26,41 @@ public class MovieCatalogueController {
      * @return Returns the movie catalogue
      */
     @GetMapping("/movies")
-    public ResponseEntity<Catalogue> getCatalogue(){
+    public ResponseEntity<Catalogue> getMovies(@RequestParam(required = false, value = "director") final String director,
+                                               @RequestParam(required = false, value = "title") final String title,
+                                               @RequestParam(required = false, value = "rating") final String ratingString){
+        boolean directorNotPresent = director == null || director.equalsIgnoreCase("");
+        boolean ratingNotPresent = ratingString == null || ratingString.equalsIgnoreCase("");
+        boolean titleNotPresent = title == null || title.equalsIgnoreCase("");
+        if (!titleNotPresent) {
+            return new ResponseEntity<>(movieCatalogueService.getMovieByTitle(title), HttpStatus.OK);
+        } else if (titleNotPresent && ratingNotPresent && !directorNotPresent) {
+            return new ResponseEntity<>(movieCatalogueService.getMoviesByDirector(director), HttpStatus.OK);
+        } else if (titleNotPresent && directorNotPresent && !ratingNotPresent) {
+            try {
+                Float rating = Float.parseFloat(ratingString);
+                return new ResponseEntity<>(movieCatalogueService.getMoviesAboveRating(rating), HttpStatus.OK);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid request parameter provided for rating");
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } else if (titleNotPresent && !ratingNotPresent && !directorNotPresent) {
+            try {
+                Float rating = Float.parseFloat(ratingString);
+                return new ResponseEntity<>(movieCatalogueService.getMoviesByDirectorAboveRating(director, rating), HttpStatus.OK);
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid request parameter provided for rating");
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        }
         return new ResponseEntity<>(movieCatalogueService.getCurrentCatalogue(), HttpStatus.OK);
     }
 
@@ -66,32 +100,6 @@ public class MovieCatalogueController {
         try {
             movieCatalogueService.editMovie(title, movieIO);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @GetMapping("/movies/director")
-    public ResponseEntity<Catalogue> getMoviesByDirector(@RequestParam(value = "director") String director){
-        if (director == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(movieCatalogueService.getMoviesByDirector(director), HttpStatus.OK);
-    }
-
-    @GetMapping("/movies/aboverating")
-    public ResponseEntity<Catalogue> getMoviesAboveRating(@RequestParam(value = "rating") String ratingString){
-        try {
-            Float rating = Float.parseFloat(ratingString);
-            return new ResponseEntity<>(movieCatalogueService.getMoviesAboveRating(rating), HttpStatus.OK);
-        } catch (NullPointerException npe) {
-            System.out.println("No rating provided in request parameter");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid request parameter provided for rating");
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
