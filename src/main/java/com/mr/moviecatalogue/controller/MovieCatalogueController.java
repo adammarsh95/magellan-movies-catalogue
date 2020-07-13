@@ -22,7 +22,9 @@ public class MovieCatalogueController {
     DatabaseService databaseService;
 
     /**
-     * Calls the service method to return the current movie catalogue
+     * Calls the service method to return the current movie catalogue. Accepts request parameters to search based on title,
+     * director name and rating. If title is passed, other request parameters are ignored as this is the primary key and
+     * must be unique, duplicate titles are not allowed. Director and rating parameters can be used simultaneously.
      * @param title
      * @param director
      * @param ratingString
