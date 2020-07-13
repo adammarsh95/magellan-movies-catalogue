@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- *
+ * Input object class to be used for RequestBody in post and patch requests for movies
  */
 @AllArgsConstructor
 @NoArgsConstructor

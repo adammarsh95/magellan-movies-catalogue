@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * Input object class to be used for RequestBody in post and patch requests for directors
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
