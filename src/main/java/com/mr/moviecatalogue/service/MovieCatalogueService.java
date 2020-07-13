@@ -51,7 +51,8 @@ public class MovieCatalogueService {
      * Throws an IllegalArgumentException for ratings outside the range of 0.0 - 5.0 and
      * rounds the given rating to one decimal place, or sets the rating to -1.0 if the rating
      * in the MovieIO is null, and calls the database service to store the movie in the database
-     * @param movieIO
+     * @param movieIO MovieIO containing mandatory title field and optional director and rating fields
+     * @throws IllegalArgumentException if rating is outside of acceptable range
      */
     public void addMovie(MovieIO movieIO){
         Float rating = movieIO.getRating();
@@ -69,8 +70,8 @@ public class MovieCatalogueService {
      * the full list of titles to ensure they are all in the database, throwing an
      * IllegalArgumentException if one is not, and then calls the database service to update
      * the director for each movie in the database
-     * @param directorIO
-     * @throws IllegalArgumentException
+     * @param directorIO DirectorIO containing the name of the director to add and a list of movie titles to add the director to
+     * @throws IllegalArgumentException Thrown if any of the movies in the DirectorIO are not present in the database
      */
     public void addDirector(DirectorIO directorIO){
         directorIO.getMovies().forEach(title -> {
@@ -91,8 +92,9 @@ public class MovieCatalogueService {
      * already match the values stored in the database for the given movie. Throws an IllegalArgumentException
      * for ratings outside the range of 0.0 - 5.0, and rounds the given rating to one decimal place. Also
      * throws an IllegalArgumentException if there is no movie present in the database with the given title.
-     * @param title
-     * @param movieIO
+     * @param title Current title of movie to be edited
+     * @param movieIO MovieIO containing optional fields, which if set, will be updated in the given movie
+     * @throws IllegalArgumentException if rating is outside of acceptable range, or if movie is not present in database for given title
      */
     public void editMovie(String title, MovieIO movieIO)  {
         Movie movie = databaseService.getMovieByTitle(title);
@@ -119,7 +121,7 @@ public class MovieCatalogueService {
 
     /**
      * Calls the database service to search for movies with the given director and returns them in a Catalogue
-     * @param director
+     * @param director Name of director to be searched for
      * @return A Catalogue with the movies with the given director
      */
     public Catalogue getMoviesByDirector(String director){
@@ -134,7 +136,8 @@ public class MovieCatalogueService {
      * Checks the given rating is within the acceptable range of 0.0-5.0 and throws an IllegalArgumentException
      * if not. Then rounds the rating to 1 decimal place, and calls the database service to search for movies
      * with the given rating and returns them in a Catalogue
-     * @param rating
+     * @param rating Rating above which movies will be searched for in database. Must be within range 0.0-5.0 and will be rounded down to 1 decimal place
+     * @throws IllegalArgumentException if rating is outside of acceptable range
      * @return A Catalogue containing all the movies with a rating equal to or above the given rating
      */
     public Catalogue getMoviesAboveRating(Float rating)  {
@@ -150,7 +153,7 @@ public class MovieCatalogueService {
      * Calls the database service to get the movie with the given title from the database
      * and sets it in the Catalogue if there is a movie with the title. Otherwise, sets an
      * empty HashMap in the Catalogue and returns it.
-     * @param title
+     * @param title Title of the movie to be retrieved from Database
      * @return A Catalogue containing the movie with the given title
      */
     public Catalogue getMovieByTitle(String title) {
@@ -168,8 +171,9 @@ public class MovieCatalogueService {
      * This method throws an IllegalArgumentException for ratings outside the range of 0.0 - 5.0,
      * rounds the given rating to one decimal place and then calls the database service with the
      * given director and rating
-     * @param director
-     * @param rating
+     * @param director Name of director to be filtered by
+     * @param rating Rating to filter for movies above. Must be between 0.0-5.0 and will be rounded down to 1 decimal place
+     * @throws IllegalArgumentException if rating is outside of acceptable range
      * @return A Catalogue containing all movies by the given director above the given rating
      */
     public Catalogue getMoviesByDirectorAboveRating(String director, Float rating)  {
@@ -184,7 +188,8 @@ public class MovieCatalogueService {
     /**
      * Calls the database service to see if there is a movie stored for the given title,
      * and if so, calls the database service to delete the director for it
-     * @param title
+     * @param title Title of the movie to have its director deleted
+     * @throws IllegalArgumentException if movie is not returned from database for given title
      */
     public void deleteDirectorFromMovie(String title){
         Movie movie = databaseService.getMovieByTitle(title);
@@ -201,7 +206,8 @@ public class MovieCatalogueService {
      * Calls the database service to see if there is a movie stored for the given title,
      * and if so, calls the database service to update the rating to -1.0 which is being
      * used for null ratings in the database
-     * @param title
+     * @param title Title of the movie to have its rating deleted
+     * @throws IllegalArgumentException if movie is not returned from database for given title
      */
     public void deleteRatingFromMovie(String title){
         Movie movie = databaseService.getMovieByTitle(title);
@@ -217,7 +223,8 @@ public class MovieCatalogueService {
     /**
      * Calls the database service to see if there is a movie stored for the given title,
      * and if so, calls the database service to delete the movie
-     * @param title
+     * @param title Title of the movie to be deleted
+     * @throws IllegalArgumentException if movie is not returned from database for given title
      */
     public void deleteMovie(String title){
         Movie movie = databaseService.getMovieByTitle(title);
@@ -230,7 +237,7 @@ public class MovieCatalogueService {
 
     /**
      * Calls database service to delete the director value for all movies with the given director
-     * @param director
+     * @param director Name of database to be deleted from database
      */
     public void deleteDirector(String director){
         databaseService.deleteDirector(director);
@@ -238,7 +245,8 @@ public class MovieCatalogueService {
 
     /**
      * Check rating is within the allowed range (0.0 to 5.0)
-     * @param rating
+     * @param rating rating to be validated
+     * @throws IllegalArgumentException when rating is outside range 0.0 - 5.0
      */
     private void checkRatingIsWithinRange(Float rating)  {
         if (rating < 0.0 || rating > 5.0) {
@@ -248,9 +256,9 @@ public class MovieCatalogueService {
 
     /**
      * Round to given number of decimals
-     * @param d
-     * @param decimalPlace
-     * @return
+     * @param d Float to be rounded
+     * @param decimalPlace number of decimal places to round to
+     * @return d rounded to specified number of decimal places
      */
     private Float roundRating(Float d, int decimalPlace) {
         BigDecimal bd = new BigDecimal(Float.toString(d));

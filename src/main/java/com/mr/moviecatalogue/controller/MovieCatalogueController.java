@@ -26,9 +26,9 @@ public class MovieCatalogueController {
      * Calls the service method to return the current movie catalogue. Accepts request parameters to search based on title,
      * director name and rating. If title is passed, other request parameters are ignored as this is the primary key and
      * must be unique, duplicate titles are not allowed. Director and rating parameters can be used simultaneously.
-     * @param title
-     * @param director
-     * @param ratingString
+     * @param title Optional title to search for. Case sensitive.
+     * @param director Optional director to search for. * or % can be used as wildcards - e.g. Ben* or Ben% returns results for all directors starting with Ben.
+     * @param ratingString Optional rating to search for movies above the given rating. Must be within range 0.0 - 5.0 and will be rounded down to 1 decimal place.
      * @return Returns the movie catalogue
      */
     @GetMapping("/movies")
@@ -72,7 +72,7 @@ public class MovieCatalogueController {
 
     /**
      * Calls the service method to add a movie to the catalogue. Returns 400 bad request if request body is null or contains no title
-     * @param movieIO
+     * @param movieIO MovieIO containing mandatory title string, and optional director name and rating value. Rating must be between 0.0 and 5.0 if present.
      * @return Http status code
      */
     @PostMapping("/movies")
@@ -93,14 +93,14 @@ public class MovieCatalogueController {
     /**
      * Calls the service method to edit a pre-existing movie in the database, identified by the path variable which is the title
      * of the movie to be edited. Returns 400 bad request if request body is null, or title is null or empty string
-     * @param movieIO
-     * @param title
+     * @param movieIO MovieIO containing the fields to be changes. All values inside are optional.
+     * @param title The current title of the movie to be edited - mandatory parameter passed as path variable.
      * @return Http status code
      */
     @PatchMapping("/movies/{title}")
     public ResponseEntity<HttpStatus> editMovie(@RequestBody MovieIO movieIO, @PathVariable(value = "title") final String title){
         if (movieIO == null || title == null || title.equalsIgnoreCase("")) {
-            System.out.println("Movie must be provided with title to edit a movie");
+            System.out.println("Movie must be provided in body with title in URI to edit a movie");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         try {
@@ -125,7 +125,7 @@ public class MovieCatalogueController {
 
     /**
      * Deletes the director from the movie in the database for the given title
-     * @param title
+     * @param title The current title of the movie to have director deleted - mandatory parameter passed as path variable.
      * @return Http status code
      */
     @DeleteMapping("/movies/{title}/director")
@@ -141,7 +141,7 @@ public class MovieCatalogueController {
 
     /**
      * Deletes the rating from the movie in the database for the given title
-     * @param title
+     * @param title The current title of the movie to have rating deleted - mandatory parameter passed as path variable.
      * @return Http status code
      */
     @DeleteMapping("/movies/{title}/rating")
@@ -157,7 +157,7 @@ public class MovieCatalogueController {
 
     /**
      * Deletes the movie from the database for the given title
-     * @param title
+     * @param title The current title of the movie to be deleted - mandatory parameter passed as path variable.
      * @return Http status code
      */
     @DeleteMapping("/movies/{title}")
@@ -173,7 +173,7 @@ public class MovieCatalogueController {
 
     /**
      * Deletes the given director from all movies with the given director
-     * @param director
+     * @param director The current title of the director to be edited - mandatory parameter passed as path variable.
      * @return Http status code
      */
     @DeleteMapping("/movies/directors/{director}")
@@ -192,7 +192,7 @@ public class MovieCatalogueController {
      * given director to all the movies in the given list of titles. Will return 400
      * bad request and won't update any movies if the list of titles contains any title
      * that is not already stored in the database.
-     * @param directorIO
+     * @param directorIO Request body DirectorIO containing the name of the director to be added (mandatory) and the list of movies to be added to (must contain at least one movie)
      * @return Http status code
      */
     @PostMapping("/movies/directors")

@@ -19,6 +19,7 @@ public class DatabaseService {
     /**
      * This method attempts to connect to the database for the project, and if it is not already present,
      * creates the database and tables in the PostgreSQL instance
+     * @return Returns the Connection to the database
      */
     public Connection connectToDatabase(){
         Connection c = null;
@@ -78,7 +79,6 @@ public class DatabaseService {
         Connection connection = null;
         Statement statement = null;
         try {
-//            Class.forName("org.postgresql.Driver");
             connection = DriverManager
                     .getConnection("jdbc:postgresql://localhost:5432/",
                             DB_USER, DB_PW);
@@ -137,6 +137,7 @@ public class DatabaseService {
 
     /**
      * Adds the given movie to the database
+     * @param movieIO MovieIO containing the mandatory title primary key and optional director and rating values
      */
     public void addMovie(MovieIO movieIO){
         Connection connection = connectToDatabase();
@@ -165,7 +166,7 @@ public class DatabaseService {
 
     /**
      * Gets a movie from the database by searching for the provided title. This parameter is case sensitive.
-     * @param title
+     * @param title Title to search the database for
      * @return Returns a Movie object for the provided title
      */
     public Movie getMovieByTitle(String title){
@@ -207,7 +208,7 @@ public class DatabaseService {
      * Gets all the movies from the database directed by the given director. Allows the use of
      * * or % allow partial queries e.g. Ben* will return all movies for all directors with the
      * first name Ben. The input string is not case sensitive.
-     * @param director
+     * @param director Director name to be searched for. Can contain wildcard characters * or % e.g. Ben* or Ben% will return all movies for all directors starting with Ben
      * @return A HashMap containing all the movies by the given director, keyed by title
      */
     public Map<String, Movie> getMoviesByDirector(String director){
@@ -243,7 +244,7 @@ public class DatabaseService {
     /**
      * Gets all the movies from the database with a rating value above or equal to the given
      * rating
-     * @param rating
+     * @param rating Rating to be searched for all movies above this rating.
      * @return A HashMap containing all the movies above the given rating, keyed by title
      */
     public Map<String, Movie> getMoviesAboveRating(Float rating){
@@ -280,8 +281,8 @@ public class DatabaseService {
      * rating. Allows the use of * or % to allow partial queries e.g. Ben* will return all movies
      * for all directors with the first name Ben. The input string is not case sensitive. The
      * movies returned are all above or equal to the given rating.
-     * @param rating
-     * @param director
+     * @param rating Rating to be searched for all movies above this rating.
+     * @param director Director name to be searched for. Can contain wildcard characters * or % e.g. Ben* or Ben% will return all movies for all directors starting with Ben
      * @return A HashMap containing all the movies in the database by the given director and above the given rating, keyed by title.
      */
     public Map<String, Movie> getMoviesByDirectorAboveRating(String director, Float rating){
@@ -317,8 +318,8 @@ public class DatabaseService {
 
     /**
      * Updates the title of the movie in the database.
-     * @param currentTitle
-     * @param newTitle
+     * @param currentTitle current title of movie to be updated
+     * @param newTitle new title to be set
      */
     public void updateTitle(String currentTitle, String newTitle){
         Connection connection = connectToDatabase();
@@ -346,8 +347,8 @@ public class DatabaseService {
 
     /**
      * Updates the director of the movie in the database for the given title.
-     * @param title
-     * @param director
+     * @param title title of movie to be updated
+     * @param director Director name to be set
      */
     public void updateDirector(String title, String director){
         Connection connection = connectToDatabase();
@@ -375,8 +376,8 @@ public class DatabaseService {
 
     /**
      * Updates the rating of the movie in the database for the given title.
-     * @param title
-     * @param rating
+     * @param title title of movie to be updated
+     * @param rating rating to be set
      */
     public void updateRating(String title, Float rating){
         Connection connection = connectToDatabase();
@@ -404,7 +405,7 @@ public class DatabaseService {
 
     /**
      * Deletes the movie from the database for the given title. Title is case insensitive.
-     * @param title
+     * @param title title of movie to be deleted
      */
     public void deleteMovie(String title){
         Connection connection = connectToDatabase();
@@ -431,7 +432,7 @@ public class DatabaseService {
 
     /**
      * Sets the director column to null for all movies with the given director. Case insensitive.
-     * @param director
+     * @param director director to be deleted from all movies they are currently set in
      */
     public void deleteDirector(String director){
         Connection connection = connectToDatabase();
